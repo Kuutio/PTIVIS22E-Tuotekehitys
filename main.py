@@ -1,9 +1,10 @@
 # standardise working directory because it can be inconsistent
+#import math
 import os
 os.chdir(str(__file__[:-8]))
 
 
-from math import sin, cos
+from math import sin, cos,atan2
 import pygame
 from pygame import sprite
 from pygame.locals import *
@@ -16,6 +17,7 @@ from player import Player
 from boss import Boss
 from bullet import Bullet
 from mixer import Mixer
+from swordattack import Slash
 import settings
 
 
@@ -78,6 +80,20 @@ class Game:
             ),
             self.all_sprites
         )
+
+        #self.slash = None
+        
+
+        self.slash = Slash(
+        self.player.position,
+        self.all_sprites,
+        #self.player
+        )
+
+       # self.slash = Slash(
+       #      self.get_mouse_position_relative,self.player.position,self.all_sprites
+       # )
+
 
         # draw everything on the canvas, then draw a part of it on the screen
         self.canvas = canvas.from_image(
@@ -257,6 +273,19 @@ class Game:
                 pygame.quit()
                 quit()
 
+    #def get_mouse_position_relative(self) -> Vector2:
+            # calculate where the mouse is on the canvas relative to the player
+            # based on where it is relative to the centre of the screen
+    #        display_centre_x = settings.display["width"] / 2
+    #        display_centre_y = settings.display["height"] / 2
+    #        display_centre = Vector2(display_centre_x, display_centre_y)
+
+    #        mouse_pos = Vector2(pygame.mouse.get_pos())
+    #        mouse_rel_to_centre = display_centre - mouse_pos
+    #        mouse_rel_to_player = self.player.rect.center - mouse_rel_to_centre
+    #        return mouse_rel_to_player
+        #pass
+
 
     def process_keyboard_input(self) -> None:
 
@@ -271,13 +300,17 @@ class Game:
 
             # calculate where the mouse is on the canvas relative to the player
             # based on where it is relative to the centre of the screen
-            display_centre_x = settings.display["width"] / 2
-            display_centre_y = settings.display["height"] / 2
-            display_centre = Vector2(display_centre_x, display_centre_y)
+            #display_centre_x = settings.display["width"] / 2
+            #display_centre_y = settings.display["height"] / 2
+            #display_centre = Vector2(display_centre_x, display_centre_y)
 
-            mouse_pos = Vector2(pygame.mouse.get_pos())
-            mouse_rel_to_centre = display_centre - mouse_pos
-            mouse_rel_to_player = self.player.rect.center - mouse_rel_to_centre
+            #mouse_pos = Vector2(pygame.mouse.get_pos())
+            #mouse_rel_to_centre = display_centre - mouse_pos
+            #mouse_rel_to_player = self.player.rect.center - mouse_rel_to_centre
+            #WORKS
+            #mouse_rel_to_player = self.get_mouse_position_relative()
+            ##mouse_rel_to_player = self.get_mouse_position_relative()
+            mouse_rel_to_player = keyboard_input.get_mouse_position_relative(self.player.rect.center)
             
             # shoot a bullet towards the point specified above
             #TODO: construct bullets from a direction, not a point
@@ -293,6 +326,8 @@ class Game:
     def update(self) -> None:
         self.all_sprites.update()
         self.keep_player_in_bounds()
+
+        self.sword_attack()
 
         self.boss_attack()
 
@@ -317,6 +352,15 @@ class Game:
                     self.boss.rect.center,
                     (self.enemy_bullets, self.all_sprites),
                 )
+    def sword_attack(self) -> None:
+       # self.slash.
+       self.slash.playerxy = self.player.position
+       #mouse_x, mouse_y = pygame.mouse.get_pos()
+       #rel_x, rel_y = mouse_x - self.slash.playerxy.x, mouse_y - self.slash.playerxy.y
+       #angle = atan2(rel_y, rel_x)
+       #self.slash.angle = angle
+       #print(self.slash.angle)
+       #pass
 
            
     def check_bullet_hits(
